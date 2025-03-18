@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+
+# this script doesn't take any parameters
+import os
+
+common_args = '--logtostderr=1 --id=0 --servers="127.0.0.1:23434" --query=mixed --neworder_dist=10 --payment_dist=15'
+
+partition_nums = [1, 180]               # number of warehouses
+threads = [12, 24]                      # must be multiple of all lock_manager settings and <= (nr_cores - 3)
+#batch_sizes = [500, 5000]
+batch_sizes = [500]
+lock_managers = [1, 2, 3, 4, 6]
+lock_managers = [1, 6]
+
+def run_experiment(protocol, protocol_args, lock):
+    for thread in threads:
+        for partition_num in partition_nums:
+            for batch_size in batch_sizes:
+                output_file = f'{protocol}.{partition_num}.{batch_size}.{thread}.{lock}.out'
+                cmd = f'./bench_tpcc --protocol={protocol} --partition_num={partition_num} --batch_size={batch_size} --threads={thread} {common_args} {protocol_args} > {output_file} 2>&1'
+                print(cmd)
+                # run command
+                os.system(cmd)
+                # calculate average latency
+                cmd = f'./calculate_latency.sh {output_file}'
+                # run command
+                os.system(cmd)
+
+# Aria
+# Aria_args = ''
+# run_experiment('Aria', Aria_args, 0)
+
+# Bohm
+# Bohm_args = '--mvcc=True --bohm_single_spin=False --same_batch=False'
+# run_experiment('Bohm', Bohm_args, 0)
+
+# AriaFB
+AriaFB_args = '--same_batch=False'
+for lock in lock_managers:
+    AriaFB_full_args = AriaFB_args + f' --ariaFB_lock_manager={lock}'
+    run_experiment('AriaFB', AriaFB_full_args, lock)
+
+# Calvin
+Calvin_args = '--replica_group=1 --same_batch=False'
+for lock in lock_managers:
+    Calvin_full_args = Calvin_args + f' --lock_manager={lock}'
+    run_experiment('Calvin', Calvin_full_args, lock)
+
+# show throughput (transactions/second):
+os.system('grep "total commit" *.out')
+# show average latency (ms):
+os.system('grep "average latency" *.out')
+
+

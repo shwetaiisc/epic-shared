@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles
+Makefile
+TAGS
+bench_tpcc
+bench_ycsb
+cmake_install.cmake
+libcommon.a
