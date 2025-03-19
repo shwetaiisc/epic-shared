@@ -12,7 +12,7 @@ namespace epic {
 void *GpuAllocator::Allocate(size_t size)
 {
     void *ptr;
-    gpu_err_check(cudaMalloc(&ptr, size));
+    gpu_err_check(cudaMallocManaged(&ptr, size));
     gpu_err_check(cudaMemset(ptr, 0, size));
     return ptr;
 }
