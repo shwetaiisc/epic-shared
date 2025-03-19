@@ -386,6 +386,280 @@ __global__ void gpuExecKernel(TpccRecords records, TpccVersions versions, GpuTxn
 
 } // namespace
 
+void printOrderLineRecord(const TpccRecords &records, long int num)
+{
+    if (records.order_line_record == nullptr)
+    {
+        printf("No order line record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+------------+------------+------------+\n");
+    printf("| ol_i_id    | ol_amount  | ol_delivery_d | ol_quantity | ol_supply_w_id |\n");
+    printf("+------------+------------+------------+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const OrderLineValue &orderLine = records.order_line_record[i].value2;
+
+        if (orderLine.ol_i_id == 0 && orderLine.ol_amount == 0 &&
+            orderLine.ol_delivery_d == 0 && orderLine.ol_quantity == 0 &&
+            orderLine.ol_supply_w_id == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u | %-10u | %-10u | %-10u |\n",
+               orderLine.ol_i_id, orderLine.ol_amount, orderLine.ol_delivery_d,
+               orderLine.ol_quantity, orderLine.ol_supply_w_id);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+------------+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printStockRecord(const TpccRecords &records, long int num)
+{
+    if (records.stock_record == nullptr)
+    {
+        printf("No stock record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+\n");
+    printf("| s_quantity | s_ytd      |\n");
+    printf("+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const StockValue &stock = records.stock_record[i].value2;
+
+        if (stock.s_quantity == 0 && stock.s_ytd == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u |\n", stock.s_quantity, stock.s_ytd);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printItemRecord(const TpccRecords &records, long int num)
+{
+    if (records.item_record == nullptr)
+    {
+        printf("No item record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+\n");
+    printf("| i_id       | i_price    |\n");
+    printf("+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const ItemValue &item = records.item_record[i].value2;
+
+        if (item.i_im_id == 0 && item.i_price == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u |\n", item.i_im_id, item.i_price);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printNewOrderRecord(const TpccRecords &records, long int num)
+{
+    if (records.new_order_record == nullptr)
+    {
+        printf("No new order record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+---------|\n");
+    printf("| dummy   |\n");
+    printf("+---------|\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const NewOrderValue &newOrder = records.new_order_record[i].value2;
+
+        if (newOrder.dummy == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u |\n", newOrder.dummy);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printDistrictRecord(const TpccRecords &records, long int num)
+{
+    if (records.district_record == nullptr)
+    {
+        printf("No district record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+------------+\n");
+    printf("| d_name       | d_ytd      | d_next_o_id|\n");
+    printf("+------------+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const DistrictValue &district = records.district_record[i].value2;
+
+        if (district.d_name == 0 && district.d_ytd == 0 && district.d_next_o_id == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u | %-10u |\n", district.d_name, district.d_ytd, district.d_next_o_id);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printWarehouseRecord(const TpccRecords &records, long int num)
+{
+    if (records.warehouse_record == nullptr)
+    {
+        printf("No warehouse record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+\n");
+    printf("| w_name       | w_ytd      |\n");
+    printf("+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const WarehouseValue &warehouse = records.warehouse_record[i].value2;
+
+        if (warehouse.w_name == 0 && warehouse.w_ytd == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u |\n", warehouse.w_name, warehouse.w_ytd);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
+void printCustomerRecord(const TpccRecords &records, long int num)
+{
+    if (records.customer_record == nullptr)
+    {
+        printf("No customer record available.\n");
+        return;
+    }
+
+    bool has_nonzero_record = false;
+
+    printf("+------------+------------+------------+------------+\n");
+    printf("| c_balance  | c_ytd_payment | c_payment_cnt | c_delivery_cnt |\n");
+    printf("+------------+------------+------------+------------+\n");
+
+    for (int i = 0; i < num; i++)
+    {
+        const CustomerValue &customer = records.customer_record[i].value2;
+
+        if (customer.c_balance == 0 &&
+            customer.c_ytd_payment == 0 && customer.c_payment_cnt == 0 &&
+            customer.c_delivery_cnt == 0)
+        {
+            continue;
+        }
+
+        has_nonzero_record = true;
+
+        printf("| %-10u | %-10u | %-10u | %-10u |\n",
+               customer.c_balance, customer.c_ytd_payment,
+               customer.c_payment_cnt, customer.c_delivery_cnt);
+    }
+
+    if (has_nonzero_record)
+    {
+        printf("+------------+------------+------------+------------+------------+\n");
+    }
+    else
+    {
+        printf("All records contain only zeros. Nothing to print.\n");
+    }
+}
+
 template <typename TxnParamArrayType, typename TxnExecPlanArrayType>
 void GpuExecutor<TxnParamArrayType, TxnExecPlanArrayType>::execute(uint32_t epoch)
 {
@@ -431,6 +705,15 @@ void GpuExecutor<TxnParamArrayType, TxnExecPlanArrayType>::execute(uint32_t epoc
         records, versions, TpccGpuTxnArrayT(txn), TpccGpuTxnArrayT(plan), config.num_txns, epoch);
     gpu_err_check(cudaPeekAtLastError());
     gpu_err_check(cudaDeviceSynchronize());
+
+    printOrderRecord(records, config.num_txns);
+    printNewOrderRecord(records, config.num_txns);
+    printCustomerRecord(records, config.num_txns);
+    printWarehouseRecord(records, config.num_txns);
+    printDistrictRecord(records, config.num_txns);
+    printItemRecord(records, config.num_txns);
+    printStockRecord(records, config.num_txns);
+
 }
 
 template class GpuExecutor<TpccTxnParamArrayT, TpccTxnExecPlanArrayT>;
